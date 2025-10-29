@@ -1,0 +1,55 @@
+# OCI Authentication
+# Get these values from your OCI Console -> User Settings -> API Keys
+tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+user_ocid        = "ocid1.user.oc1..aaaaaaaaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+fingerprint      = "aa:bb:cc:dd:ee:ff:gg:hh:ii:jj:kk:ll:mm:nn:oo:pp"
+private_key_path = "~/.oci/oci_api_key.pem"
+
+# Compartment
+# Get this from OCI Console -> Identity -> Compartments
+compartment_ocid = "ocid1.compartment.oc1..aaaaaaaaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+# Region
+region = "us-chicago-1"
+
+# Cluster Configuration
+cluster_name       = "my-oke-cluster"
+kubernetes_version = "v1.29.1"  # Check available versions: oci ce cluster-options get --cluster-option-id all
+
+# Network Configuration (defaults are fine for most use cases)
+# vcn_cidr           = "10.0.0.0/16"
+# lb_subnet_cidr     = "10.0.10.0/24"
+# worker_subnet_cidr = "10.0.20.0/24"
+# api_subnet_cidr    = "10.0.30.0/24"
+# pods_cidr          = "10.244.0.0/16"
+# services_cidr      = "10.96.0.0/16"
+
+# Node Pool Configuration
+node_pool_size     = 3
+node_shape         = "VM.Standard.E6.Flex"
+node_ocpus         = 4
+node_memory_in_gbs = 32
+
+# SSH Key for Node Access
+# Generate with: ssh-keygen -t rsa -b 4096 -f ~/.ssh/oke-nodes
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... your-public-key-here"
+
+# Node Image (leave empty to use latest Oracle Linux image)
+# To find available images: oci ce node-pool-options get --node-pool-option-id all --compartment-id <compartment_ocid>
+# node_image_id = ""
+
+# Workload Identity
+workload_identity_namespace = "default"
+
+# Image Policy (set to true for enhanced security)
+enable_image_policy = false
+
+# Tags (optional)
+# defined_tags = {
+#   "Operations.Environment" = "Production"
+# }
+# freeform_tags = {
+#   "Project"   = "MyProject"
+#   "ManagedBy" = "Terraform"
+# }
+
