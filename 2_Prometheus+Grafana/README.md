@@ -2,6 +2,8 @@
 
 Complete Kubernetes cluster monitoring with Prometheus and Grafana using the kube-prometheus-stack Helm chart.
 
+> **📖 [Back to Launchstack Overview](../README.md)** | This is Step 2 of the [Launchstack](https://github.com/yourusername/launchstack) deployment sequence.
+
 ---
 
 ## QUICKSTART

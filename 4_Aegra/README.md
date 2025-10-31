@@ -2,6 +2,8 @@
 
 Aegra is an open-source, self-hosted alternative to LangGraph Platform. Run agent workflows on your infrastructure with zero vendor lock-in while maintaining full API compatibility with the LangGraph Client SDK.
 
+> **📖 [Back to Launchstack Overview](../README.md)** | This component is part of the [Launchstack](https://github.com/yourusername/launchstack) infrastructure stack.
+
 ---
 
 ## QUICKSTART
@@ -835,7 +837,11 @@ python3 scripts/migrate.py revision --autogenerate -m "Add new feature"
 
 ### Langfuse Integration
 
-Aegra integrates seamlessly with Langfuse for observability and tracing.
+Aegra integrates seamlessly with [Langfuse](../3_Langfuse/README.md) for observability and tracing. When deployed as part of the Launchstack, Langfuse provides complete visibility into your agent workflows.
+
+> **💡 Integration Tip:** If you deployed Langfuse as part of the Launchstack (Step 3), use the Kubernetes service DNS name for the host: `http://langfuse.langfuse.svc.cluster.local:3000`
+
+📖 **Quick Setup:** See the [Launchstack Integration Guide](../README.md#integration-guide) for step-by-step instructions.
 
 #### Enable Langfuse
 

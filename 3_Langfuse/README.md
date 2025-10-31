@@ -2,6 +2,8 @@
 
 Langfuse is an open-source LLM engineering platform that provides observability and analytics for Large Language Model applications. Deploy it to your Kubernetes cluster using the official Langfuse Helm chart.
 
+> **📖 [Back to Launchstack Overview](../README.md)** | This component is part of the [Launchstack](https://github.com/yourusername/launchstack) infrastructure stack.
+
 ---
 
 ## QUICKSTART
@@ -243,6 +245,71 @@ The installation deploys:
 - **ClickHouse**: Analytics database for fast queries
 - **Redis**: Caching layer
 - **MinIO (S3-compatible)**: Object storage for traces
+
+---
+
+## Integration with Other Components
+
+### Aegra Integration
+
+Langfuse integrates seamlessly with [Aegra](../4_Aegra/README.md) to provide complete observability for your LLM agents.
+
+#### Why Integrate?
+
+- **Complete Visibility**: Track all agent workflows, LLM calls, and tool executions
+- **Performance Monitoring**: Monitor latency, throughput, and error rates
+- **Cost Tracking**: Analyze costs per agent execution and identify optimization opportunities
+- **Debugging**: Trace agent execution paths and identify bottlenecks
+- **Team Collaboration**: Share traces and insights with your team
+
+#### How It Works
+
+Aegra sends traces to Langfuse automatically when configured. Each agent execution creates a trace that includes:
+- LLM model calls (OpenAI, Anthropic, etc.)
+- Tool invocations
+- Agent state transitions
+- Error messages and stack traces
+- Latency and token usage metrics
+
+#### Setup Instructions
+
+After deploying both Langfuse and Aegra:
+
+1. **Get Langfuse API Keys:**
+   ```bash
+   # Port forward to Langfuse
+   kubectl port-forward -n langfuse svc/langfuse 3000:3000
+   ```
+   - Open http://localhost:3000
+   - Create an account and navigate to Settings → API Keys
+   - Generate a new API key pair (public key and secret key)
+
+2. **Configure Aegra Secrets:**
+   ```bash
+   cd ../4_Aegra/deployments/k8s
+   # Edit 03-secrets.yaml and add:
+   # LANGFUSE_PUBLIC_KEY: <base64-encoded-public-key>
+   # LANGFUSE_SECRET_KEY: <base64-encoded-secret-key>
+   # LANGFUSE_HOST: <base64-encoded-service-url>
+   ```
+
+3. **Use Kubernetes Service DNS:**
+   ```yaml
+   # In Aegra ConfigMap or environment variables
+   LANGFUSE_HOST: "http://langfuse.langfuse.svc.cluster.local:3000"
+   ```
+
+4. **Restart Aegra:**
+   ```bash
+   kubectl rollout restart deployment/aegra-app -n aegra
+   ```
+
+5. **Verify Integration:**
+   - Create and run an agent through Aegra
+   - Check Langfuse UI - traces should appear automatically
+   - Explore performance metrics and cost analysis
+
+📖 **Full integration guide:** See the [Launchstack Integration Guide](../README.md#integration-guide) for detailed steps.
 
 ---
 
