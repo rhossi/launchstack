@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U stackagent"]
+      test: ["CMD-SHELL", "pg_isready -U stackagent -d stack_agent_db"]
       interval: 10s
       timeout: 5s
       retries: 5
