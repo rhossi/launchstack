@@ -35,8 +35,8 @@ services:
     volumes:
       - ./backend:/app
       - ./data/agent-platform:/var/agent-platform # Agent platform base path for writing agents and aegra.json
-      - /Users/felipe/.kube:/root/.kube:ro
-      - /Users/felipe/.minikube:/root/.minikube:ro
+      - ${KUBE_CONFIG_PATH:-${HOME}/.kube}:/root/.kube:ro
+      - ${MINIKUBE_PATH:-${HOME}/.minikube}:/root/.minikube:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,7 +60,7 @@ services:
   # Aegra Server - LangGraph agent server
   aegra:
     build:
-      context: /Users/felipe/Documents/Projects/aegra
+      context: ./aegra
       dockerfile: deployments/docker/Dockerfile
     ports:
       - "8001:8001"
@@ -76,11 +76,11 @@ services:
     volumes:
       - ./data/agent-platform/aegra:/app/aegra-data
       - ./data/agent-platform/stacks:/app/graphs # Agent platform stacks mounted to /app/graphs (preloaded graphs handled separately)
-      - /Users/felipe/Documents/Projects/aegra/graphs:/app/graphs-preloaded:ro # Preloaded graphs (mounted separately, may need symlink or aegra.json update)
-      - /Users/felipe/Documents/Projects/aegra/src:/app/src:ro # for hot reload support of server
-      - /Users/felipe/Documents/Projects/aegra/auth.py:/app/auth.py:ro
-      - /Users/felipe/Documents/Projects/aegra/.env:/app/.env:ro
-      - /Users/felipe/Documents/Projects/aegra/alembic:/app/alembic:ro # for migrations
+      - ./aegra/graphs:/app/graphs-preloaded:ro # Preloaded graphs (mounted separately, may need symlink or aegra.json update)
+      - ./aegra/src:/app/src:ro # for hot reload support of server
+      - ./aegra/auth.py:/app/auth.py:ro
+      - ./aegra/.env:/app/.env:ro
+      - ./aegra/alembic:/app/alembic:ro # for migrations
       - ./scripts/create_aegra_db.py:/app/create_aegra_db.py:ro
     entrypoint: >
       sh -c "
@@ -106,7 +106,7 @@ services:
   # Agent Chat UI - Next.js chat interface for LangGraph agents
   agent-chat-ui:
     build:
-      context: /Users/felipe/Documents/Projects/agent-chat-ui
+      context: ./agent-chat-ui
       dockerfile: deployments/docker/Dockerfile
     ports:
       - "3002:3000"
