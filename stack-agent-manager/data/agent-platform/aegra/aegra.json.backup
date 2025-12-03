@@ -1,0 +1,12 @@
+{
+  "graphs": {
+    "legal_agent": "./graphs-preloaded/legal_agent/graph.py:graph",
+    "agent": "./graphs-preloaded/react_agent/graph.py:graph",
+    "agent_hitl": "./graphs-preloaded/react_agent_hitl/graph.py:graph",
+    "subgraph_agent": "./graphs-preloaded/subgraph_agent/graph.py:graph",
+    "5b0172df-b410-4458-9c90-3dc591bd79f8__938c4ba9-674e-43b4-94cc-f6f9b6660eee": "./graphs/5b0172df-b410-4458-9c90-3dc591bd79f8/agents/938c4ba9-674e-43b4-94cc-f6f9b6660eee/extracted/legal_agent/graph.py:graph",
+    "f545e344-f219-4500-87de-3067c3f96486__e284bf9d-ea77-473f-a80c-3597871606fd": "./graphs/f545e344-f219-4500-87de-3067c3f96486/agents/e284bf9d-ea77-473f-a80c-3597871606fd/extracted/legal_agent/graph.py:graph",
+    "d22bd4d9-fa2d-4062-ad7d-8fc7ce419133__929a39ca-2be6-4543-b6a8-01d02ef0cd31": "./graphs/d22bd4d9-fa2d-4062-ad7d-8fc7ce419133/agents/929a39ca-2be6-4543-b6a8-01d02ef0cd31/extracted/legal_agent/graph.py:graph",
+    "000cf9c9-bdc9-4212-99fb-9ab5f03f8fab__50a84162-f805-43a8-a689-bc90afa194c7": "./graphs/000cf9c9-bdc9-4212-99fb-9ab5f03f8fab/agents/50a84162-f805-43a8-a689-bc90afa194c7/extracted/legal_agent/graph.py:graph"
+  }
+}

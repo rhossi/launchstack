@@ -1,390 +1,361 @@
-# Stack & Agent Management Web Application
+<p align="center">
+  <img src="docs/images/banner.png" alt="Aegra banner" />
+</p>
 
-Full-stack web application for managing stacks and agents with Kubernetes integration. Each stack maps to a Kubernetes namespace and contains multiple agents deployed as Kubernetes deployments.
+# Aegra - Open Source LangGraph Platform Alternative
 
-## Architecture
+<p align="center">
+  <strong>Self-hosted AI agent backend. LangGraph power without vendor lock-in.</strong>
+</p>
 
-- **Stack** = Kubernetes namespace (e.g., `stack-123`)
-- **Agent** = Kubernetes deployment within a stack's namespace
-- **One stack** → **Many agents**
-- **One agent** → **One stack**
+<p align="center">
+  <a href="https://github.com/ibbybuilds/aegra/stargazers"><img src="https://img.shields.io/github/stars/ibbybuilds/aegra" alt="GitHub stars"></a>
+  <a href="https://github.com/ibbybuilds/aegra/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ibbybuilds/aegra" alt="License"></a>
+  <a href="https://github.com/ibbybuilds/aegra/issues"><img src="https://img.shields.io/github/issues/ibbybuilds/aegra" alt="Issues"></a>
+  <a href="https://discord.com/invite/D5M3ZPS25e"><img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://www.reddit.com/r/aegra/"><img src="https://img.shields.io/badge/Reddit-Join-orange?logo=reddit&logoColor=white" alt="Reddit"></a>
+  <a href="https://x.com/intent/user?screen_name=ibbyybuilds"><img src="https://img.shields.io/twitter/follow/ibbyybuilds?style=social" alt="Follow on X"></a>
+</p>
 
-When you create a stack, the system:
-1. Creates a Kubernetes namespace
-2. Creates a disk directory structure
-3. Stores stack metadata in PostgreSQL
+Replace LangGraph Platform with your own infrastructure. Built with FastAPI + PostgreSQL for developers who demand complete control over their agent orchestration.
 
-When you create an agent, the system:
-1. Accepts a ZIP file upload containing agent code
-2. Extracts the code to disk
-3. Creates Kubernetes Deployment, Service, and Ingress
-4. Mounts the code directory as a hostPath volume
+**🔌 Agent Protocol Compliant**: Aegra implements the [Agent Protocol](https://github.com/langchain-ai/agent-protocol) specification, an open-source standard for serving LLM agents in production.
 
-## Tech Stack
+**🎯 Perfect for:** Teams escaping vendor lock-in • Data sovereignty requirements • Custom deployments • Cost optimization
 
-- **Frontend**: Next.js 14+ (App Router), React Server Components, Shadcn UI, Tailwind CSS, TypeScript
-- **Backend**: FastAPI, SQLAlchemy 2.0 (async), Pydantic v2, PostgreSQL
-- **Kubernetes**: Kubernetes Python SDK (`kubernetes` library) for namespace and deployment management
-- **Authentication**: JWT tokens (access + refresh)
-- **Development**: Docker Compose
+## 🆕 What's New
 
-## Quick Start
+- **🤝 Human-in-the-Loop Support**: Interactive agent workflows with approval gates and user intervention points
+- **📊 [Langfuse Integration](docs/langfuse-usage.md)**: Complete observability and tracing for your agent runs with automatic metadata capture
+
+## 🎃 Hacktoberfest 2025
+
+Aegra is participating in Hacktoberfest! We welcome **meaningful contributions**.
+
+**What we're looking for:**
+- Feature development and enhancements
+- Bug fixes that improve stability  
+- Substantial documentation improvements
+- Testing and feedback on real use cases
+
+**What we're NOT looking for:**
+- Single typo fixes
+- Whitespace changes  
+- Low-effort PRs for swag hunting
+
+Quality over quantity. If you're here to build something real, we'd love your help.
+
+Check out our [Contributing Guidelines](CONTRIBUTING.md) and [open issues](https://github.com/ibbybuilds/aegra/issues) to get started.
+
+---
+
+## 🔥 Why Aegra vs LangGraph Platform?
+
+| Feature                | LangGraph Platform         | Aegra (Self-Hosted)                               |
+| ---------------------- | -------------------------- | ------------------------------------------------- |
+| **Cost**               | $$$+ per month             | **Free** (self-hosted), infra-cost only           |
+| **Data Control**       | Third-party hosted         | **Your infrastructure**                           |
+| **Vendor Lock-in**     | High dependency            | **Zero lock-in**                                  |
+| **Customization**      | Platform limitations       | **Full control**                                  |
+| **API Compatibility**  | LangGraph SDK              | **Same LangGraph SDK**                            |
+| **Authentication**     | Lite: no custom auth       | **Custom auth** (JWT/OAuth/Firebase/NoAuth)       |
+| **Database Ownership** | No bring-your-own database | **BYO Postgres** (you own credentials and schema) |
+| **Tracing/Telemetry**  | Forced LangSmith in SaaS   | **Your choice** (Langfuse/None)                   |
+
+## ✨ Core Benefits
+
+- **🏠 Self-Hosted**: Run on your infrastructure, your rules
+- **🔄 Drop-in Replacement**: Use existing LangGraph Client SDK without changes
+- **🛡️ Production Ready**: PostgreSQL persistence, streaming, authentication
+- **📊 Zero Vendor Lock-in**: Apache 2.0 license, open source, full control
+- **🚀 Fast Setup**: 5-minute deployment with Docker
+- **🔌 Agent Protocol Compliant**: Implements the open-source [Agent Protocol](https://github.com/langchain-ai/agent-protocol) specification
+- **💬 Agent Chat UI Compatible**: Works seamlessly with [LangChain's Agent Chat UI](https://github.com/langchain-ai/agent-chat-ui)
+
+## 🚀 Quick Start (5 minutes)
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Node.js 20+ (for local frontend development)
-- Python 3.11+ (for local backend development)
-- UV (Python package manager)
-- Kubernetes cluster access (for production deployment)
-- Kubernetes Python SDK automatically handles cluster access via:
-  - In-cluster config (when running inside K8s pods)
-  - Kubeconfig file (for local development - optional, auto-detected)
+- Python 3.11+
+- Docker (for PostgreSQL)
+- uv (Python package manager)
 
-### Setup
-
-1. **Clone the repository**
-
-2. **Start services with Docker Compose**
+### Get Running
 
 ```bash
-docker-compose up -d
-```
+# Clone and setup
+git clone https://github.com/ibbybuilds/aegra.git
+cd aegra
+# Install uv if missing
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-This will start:
-- PostgreSQL database on port 5432
-- FastAPI backend on port 8000
-- Next.js frontend on port 3001 (mapped from container port 3000)
+# Sync env and dependencies
+uv sync
 
-**Note**: The backend uses volume mounts and `--reload`, so code changes are picked up automatically. However, environment variable changes in `docker-compose.yml` require a container restart: `docker-compose restart backend`
+# Activate environment
+source .venv/bin/activate  # Mac/Linux
+# OR .venv/Scripts/activate  # Windows
 
-3. **Configure environment variables**
-
-```bash
-cd backend
+# Environment
 cp .env.example .env
-# Edit .env with your database credentials if needed
+
+# Start everything (database + migrations + server)
+docker compose up aegra
 ```
 
-4. **Run database migrations**
+### Verify It Works
 
 ```bash
-cd backend
-alembic upgrade head
-```
-
-Or if using Docker:
-
-```bash
-docker-compose exec backend alembic upgrade head
-```
-
-**Note on Docker vs Local Development:**
-- **Docker**: Environment variables in `docker-compose.yml` override `config.py` defaults. Changes to env vars require: `docker-compose restart backend`
-- **Local**: Uses `.env` file and `config.py` defaults. Code changes auto-reload with `--reload` flag.
-- **Rebuild needed**: Only if you change `pyproject.toml` dependencies or Dockerfile: `docker-compose build backend`
-
-4. **Verify backend is running**
-
-Test the backend health endpoint:
-```bash
+# Health check
 curl http://localhost:8000/health
+
+# Interactive API docs
+open http://localhost:8000/docs
 ```
 
-Expected response: `{"status":"healthy"}`
+You now have a self-hosted LangGraph Platform alternative running locally.
 
-If this fails, check backend logs:
-```bash
-docker-compose logs backend
-```
+## 💬 Agent Chat UI Compatible
 
-5. **Access the application**
+Aegra works seamlessly with [LangChain's Agent Chat UI](https://github.com/langchain-ai/agent-chat-ui). Simply set `NEXT_PUBLIC_API_URL=http://localhost:8000` and `NEXT_PUBLIC_ASSISTANT_ID=agent` in your Agent Chat UI environment to connect to your Aegra backend.
 
-- Frontend: http://localhost:3001
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+## 👨‍💻 For Developers
 
-**Troubleshooting "Cannot connect to backend API":**
+**New to database migrations?** Check out our guides:
 
-1. **Verify backend is running:**
-   ```bash
-   docker-compose ps
-   # Should show backend as "Up"
-   ```
+- **📚 [Developer Guide](docs/developer-guide.md)** - Complete setup, migrations, and development workflow
+- **⚡ [Migration Cheatsheet](docs/migration-cheatsheet.md)** - Quick reference for common commands
 
-2. **Check backend logs for errors:**
-   ```bash
-   docker-compose logs backend
-   ```
-
-3. **Test backend directly:**
-   ```bash
-   curl http://localhost:8000/health
-   curl http://localhost:8000/
-   ```
-
-4. **If frontend runs locally (not Docker):**
-   - Ensure `frontend/.env.local` exists with `NEXT_PUBLIC_API_URL=http://localhost:8000`
-   - Restart Next.js dev server after creating/editing `.env.local`
-
-5. **If frontend runs in Docker:**
-   - **Important**: `NEXT_PUBLIC_*` env vars are embedded at build time in Next.js
-   - If you changed `NEXT_PUBLIC_API_URL` in `docker-compose.yml`, you must rebuild:
-     ```bash
-     docker-compose build frontend
-     docker-compose up -d frontend
-     ```
-   - Or restart with rebuild: `docker-compose up -d --build frontend`
-
-## Development
-
-### Backend
+**Quick Development Commands:**
 
 ```bash
-cd backend
+# Docker development (recommended)
+docker compose up aegra
 
-# Install dependencies with UV
-uv pip install -e .
+# Local development
+docker compose up postgres -d
+python3 scripts/migrate.py upgrade
+python3 run_server.py
 
-# Run migrations
-alembic upgrade head
-
-# Run development server
-uvicorn app.main:app --reload
+# Create new migration
+python3 scripts/migrate.py revision --autogenerate -m "Add new feature"
 ```
 
-### Frontend
+## 🧪 Try the Example Agent
 
-```bash
-cd frontend
+Use the **same LangGraph Client SDK** you're already familiar with:
 
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-```
-
-## Environment Variables
-
-### Backend
-
-Create `backend/.env`:
-
-```
-DATABASE_URL=postgresql+asyncpg://stackagent:dev_password@localhost:5432/stack_agent_db
-SECRET_KEY=your-secret-key-here-min-32-chars
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-REFRESH_TOKEN_EXPIRE_DAYS=7
-CORS_ORIGINS=http://localhost:3000,http://localhost:3001
-ENVIRONMENT=development
-```
-
-#### SECRET_KEY Explained
-
-The `SECRET_KEY` is used to sign and verify JWT (JSON Web Token) tokens for user authentication. It must be:
-- **At least 32 characters long** (required for security)
-- **Random and unpredictable** (never use predictable values like "password123")
-- **Kept secret** (never commit to version control, use different keys for dev/prod)
-
-**How to generate a secure SECRET_KEY:**
-
-**Option 1: Using Python (recommended)**
-```bash
-python3 -c "import secrets; print(secrets.token_urlsafe(32))"
-```
-
-**Option 2: Using OpenSSL**
-```bash
-openssl rand -hex 32
-```
-
-**Option 3: Using Python's secrets module**
 ```python
-import secrets
-print(secrets.token_urlsafe(32))
+import asyncio
+from langgraph_sdk import get_client
+
+async def main():
+    # Connect to your self-hosted Aegra instance
+    client = get_client(url="http://localhost:8000")
+
+    # Create assistant (same API as LangGraph Platform)
+    assistant = await client.assistants.create(
+        graph_id="agent",
+        if_exists="do_nothing",
+        config={},
+    )
+    assistant_id = assistant["assistant_id"]
+
+    # Create thread
+    thread = await client.threads.create()
+    thread_id = thread["thread_id"]
+
+    # Stream responses (identical to LangGraph Platform)
+    stream = client.runs.stream(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+        input={
+            "messages": [
+                {"type": "human", "content": [{"type": "text", "text": "hello"}]}
+            ]
+        },
+        stream_mode=["values", "messages-tuple", "custom"],
+        on_disconnect="cancel",
+    )
+
+    async for chunk in stream:
+        print(f"event: {getattr(chunk, 'event', None)}, data: {getattr(chunk, 'data', None)}")
+
+asyncio.run(main())
 ```
 
-**Example output:**
-```
-SECRET_KEY=K8jX2mP9qL5nR7sT3vW6yZ1aB4cD8eF0gH2iJ5kM9oP3qR6sT9uV2wX5yZ8a
-```
+**Key Point**: Your existing LangGraph applications work without modification! 🔄
 
-**⚠️ Security Warning:**
-- Use a **different SECRET_KEY** for production than development
-- If you change the SECRET_KEY, all existing JWT tokens will become invalid (users will need to log in again)
-- Store production SECRET_KEY securely (environment variables, secret management service)
-- Never expose the SECRET_KEY in logs, error messages, or client-side code
+## 🏗️ Architecture
 
-# Kubernetes configuration (optional)
-K8S_CONFIG_PATH=/path/to/kubeconfig  # Path to kubeconfig file (default: auto-detect)
-KUBECONFIG=/path/to/kubeconfig      # Alternative env var name
-
-# Agent platform file system configuration
-AGENT_PLATFORM_BASE_PATH=/var/agent-platform  # Base path for agent code storage
-
-# Ingress configuration
-INGRESS_HOST=agents.yourdomain.com  # Hostname for ingress rules
+```text
+Client → FastAPI → LangGraph SDK → PostgreSQL
+ ↓         ↓           ↓             ↓
+Agent    HTTP     State        Persistent
+SDK      API    Management      Storage
 ```
 
-### Frontend
+### Components
 
-Create `frontend/.env.local` (copy from `.env.local.example`):
+- **FastAPI**: Agent Protocol-compliant HTTP layer
+- **LangGraph**: State management and graph execution
+- **PostgreSQL**: Durable checkpoints and metadata
+- **Agent Protocol**: Open-source specification for LLM agent APIs
+- **Config-driven**: `aegra.json` for graph definitions
+
+## 📁 Project Structure
+
+```text
+aegra/
+├── aegra.json           # Graph configuration
+├── auth.py              # Authentication setup
+├── graphs/              # Agent definitions
+│   └── react_agent/     # Example ReAct agent
+├── src/agent_server/    # FastAPI application
+│   ├── main.py         # Application entrypoint
+│   ├── core/           # Database & infrastructure
+│   ├── models/         # Pydantic schemas
+│   ├── services/       # Business logic
+│   └── utils/          # Helper functions
+├── tests/              # Test suite
+└── deployments/        # Docker & K8s configs
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure values:
 
 ```bash
-cd frontend
-cp .env.local.example .env.local
-# Edit .env.local if your backend runs on a different URL
+cp .env.example .env
 ```
-
-Or create it manually:
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-**Note**: If running via Docker Compose, the API URL is automatically set. This file is only needed for local development outside Docker.
-
-## Testing
-
-### Backend Tests
 
 ```bash
-cd backend
-pytest
+# Database
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/aegra
+
+# Authentication (extensible)
+AUTH_TYPE=noop  # noop, custom
+
+# Server
+HOST=0.0.0.0
+PORT=8000
+DEBUG=true
+
+# LLM Providers
+OPENAI_API_KEY=sk-...
+# ANTHROPIC_API_KEY=...
+# TOGETHER_API_KEY=...
 ```
 
-### Frontend Tests
+### Graph Configuration
 
-```bash
-cd frontend
-npm test
+`aegra.json` defines your agent graphs:
+
+```json
+{
+  "graphs": {
+    "agent": "./graphs/react_agent/graph.py:graph"
+  }
+}
 ```
 
-## Project Structure
+## 🎯 What You Get
 
-```
-stack-agent-manager/
-├── backend/          # FastAPI backend
-│   ├── app/
-│   │   ├── models/   # SQLAlchemy models
-│   │   ├── schemas/  # Pydantic schemas
-│   │   ├── routers/  # API routes
-│   │   ├── services/ # Business logic
-│   │   └── utils/    # Utilities
-│   │       ├── k8s.py          # Kubernetes client utilities
-│   │       ├── k8s_deploy.py   # K8s deployment manifests
-│   │       └── filesystem.py   # Disk layout operations
-│   └── alembic/      # Database migrations
-├── frontend/         # Next.js frontend
-│   ├── app/          # App Router pages
-│   ├── components/   # React components
-│   ├── lib/          # Utilities and API client
-│   └── types/        # TypeScript types
-└── docker-compose.yml
-```
+### ✅ **Core Features**
 
-## Disk Layout
+- [Agent Protocol](https://github.com/langchain-ai/agent-protocol)-compliant REST endpoints
+- Persistent conversations with PostgreSQL checkpoints
+- Streaming responses with network resilience
+- Config-driven agent graph management
+- Compatible with LangGraph Client SDK
+- Human-in-the-loop support
+- [Langfuse integration](docs/langfuse-usage.md) for observability and tracing
 
-Agent code is stored on disk following this structure:
+### ✅ **Production Ready**
 
-```
-/var/agent-platform/
-  stacks/
-    <stack-id>/
-      agents/
-        <agent-id>/
-          agent.zip          # Uploaded zip file
-          extracted/         # Extracted agent code
-            graph.py
-            config.yaml
-            ...
-```
+- Docker containerization
+- Database migrations with Alembic
+- Comprehensive test suite
+- Authentication framework (JWT/OAuth ready)
+- Health checks and monitoring endpoints
 
-This directory structure is mounted into Kubernetes pods via `hostPath` volumes.
+### ✅ **Developer Experience**
 
-## Features
+- Interactive API documentation (FastAPI)
+- Hot reload in development
+- Clear error messages and logging
+- Extensible architecture
+- **📚 [Developer Guide](docs/developer-guide.md)** - Complete setup, migrations, and development workflow
+- **⚡ [Migration Cheatsheet](docs/migration-cheatsheet.md)** - Quick reference for common commands
 
-- **User Authentication**: Register, login, logout with JWT tokens
-- **Stack Management**: 
-  - Create stacks (automatically creates K8s namespace)
-  - List, view, update, delete stacks
-  - Each stack maps to a Kubernetes namespace
-- **Agent Management**:
-  - Create agents with ZIP file upload
-  - Automatic code extraction and deployment
-  - Kubernetes Deployment, Service, and Ingress creation
-  - Agent status tracking (pending, deploying, running, failed)
-  - API and UI URLs for each agent
-- **Authorization**: Users can only modify their own resources
-- **Responsive Design**: Modern UI with Shadcn components
-- **Kubernetes Integration**: Full lifecycle management of K8s resources
+## Star History
 
-## API Endpoints
+<a href="https://www.star-history.com/#ibbybuilds/aegra&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ibbybuilds/aegra&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ibbybuilds/aegra&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ibbybuilds/aegra&type=Date" />
+ </picture>
+</a>
 
-### Stacks
+## 🛣️ Roadmap
 
-- `POST /api/stacks` - Create a new stack (creates K8s namespace)
-- `GET /api/stacks` - List stacks with pagination
-- `GET /api/stacks/{stack_id}` - Get stack details with agents
-- `PUT /api/stacks/{stack_id}` - Update stack
-- `DELETE /api/stacks/{stack_id}` - Delete stack (deletes K8s namespace and all agents)
+**✅ Completed**
 
-### Agents
+- Agent Chat UI compatibility
+- Agent Protocol API implementation
+- PostgreSQL persistence and streaming
+- Authentication framework
+- Human-in-the-loop support
+- Langfuse integration
 
-- `POST /api/stacks/{stack_id}/agents` - Create agent (multipart form with ZIP file)
-- `GET /api/stacks/{stack_id}/agents` - List agents in a stack
-- `GET /api/agents/{agent_id}` - Get agent details
-- `PUT /api/agents/{agent_id}` - Update agent
-- `DELETE /api/agents/{agent_id}` - Delete agent (removes K8s resources)
+**🎯 Next**
 
-See http://localhost:8000/docs for interactive API documentation.
+- Custom HTTP endpoints support
+- Generative user interfaces support
+- Redis-backed streaming buffers
+- Advanced deployment recipes
 
-## Kubernetes Deployment
+**🚀 Future**
 
-### Prerequisites
+- Performance optimizations
+- Custom UI themes and branding
+- Aegra CLI for migration and image building
 
-- Access to a Kubernetes cluster
-- Kubernetes Python SDK will automatically authenticate using:
-  - In-cluster config (when running inside K8s pods)
-  - Kubeconfig file (for local development - auto-detected from `~/.kube/config` or `KUBECONFIG` env var)
-- Ingress controller installed (for agent URLs)
+## 🤝 Contributing
 
-**Note**: `kubectl` is not required for the application to work. It's only useful for manual cluster operations and testing. The Python SDK handles all K8s API interactions.
+We welcome contributions! Here's how you can help:
 
-### Configuration
+**🐛 Issues & Bugs**
 
-The Kubernetes Python SDK automatically detects cluster configuration:
-1. **In-cluster config** (when running inside K8s pods) - automatically detected
-2. **Kubeconfig file** (for local development) - auto-detected from:
-   - `~/.kube/config` (default location)
-   - `KUBECONFIG` environment variable
-   - `K8S_CONFIG_PATH` environment variable (custom path)
+- Report bugs with detailed reproduction steps
+- Suggest new features and improvements
+- Help with documentation
 
-**Note**: `kubectl` is not required for the application to work. It's only useful for manual cluster operations and testing. The Python SDK handles all K8s API interactions.
+**💻 Code Contributions**
 
-### Agent Deployment Details
+- Improve Agent Protocol spec alignment
+- Add authentication backends
+- Enhance testing coverage
+- Optimize performance
 
-When an agent is created:
-1. ZIP file is uploaded and saved to disk
-2. Code is extracted to `extracted/` directory
-3. Kubernetes Deployment is created with:
-   - Image: `iad.ocir.io/tenant/aegra-runtime:latest` (configurable)
-   - Volume mount: Agent code directory → `/app/graphs`
-   - Port: 8000
-4. Kubernetes Service exposes the deployment
-5. Kubernetes Ingress creates public URL: `https://{INGRESS_HOST}/stacks/{stack_id}/agents/{agent_id}/`
+**📚 Documentation**
 
-### Production Considerations
+- Deployment guides
+- Integration examples
+- Best practices
 
-- Ensure `/var/agent-platform` is accessible from Kubernetes nodes
-- Configure persistent storage if needed
-- Set up ingress controller with proper TLS certificates
-- Configure image pull secrets for private registries
-- Monitor disk space for agent code storage
+**Get Started**: Check out [CONTRIBUTING.md](CONTRIBUTING.md), our [Developer Guide](docs/developer-guide.md), and our [good first issues](https://github.com/ibbybuilds/aegra/labels/good%20first%20issue).
 
-## License
+## 📄 License
 
-MIT
+Apache 2.0 License - see [LICENSE](LICENSE) file for details.
 
+---
+
+<p align=\"center\">
+  <strong>⭐ If Aegra helps you escape vendor lock-in, please star the repo! ⭐</strong><br>
+  <sub>Built with ❤️ by developers who believe in infrastructure freedom</sub>
+</p>

@@ -97,8 +97,8 @@ services:
       sh -c "
         echo 'Creating aegra database if it does not exist...' &&
         python /app/create_aegra_db.py &&
-        echo 'Running database migrations...' &&
-        alembic upgrade head &&
+        echo 'Running database migrations (if any)...' &&
+        (alembic upgrade head || echo 'No migrations to run or migration system not configured') &&
         echo 'Starting Aegra server...' &&
         uvicorn src.agent_server.main:app --host 0.0.0.0 --port 8001 --reload
       "
