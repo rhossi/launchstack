@@ -30,3 +30,9 @@ htmlcov/
 
 # Kubernetes secrets (contains sensitive data)
 deployments/k8s/03-secrets.yaml
+aegra/.git/
+agent-chat-ui/.git/
+aegra/.git/
+agent-chat-ui/.git/
+aegra/.git/
+agent-chat-ui/.git/
