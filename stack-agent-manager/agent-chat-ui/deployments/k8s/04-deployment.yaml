@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-chat-ui
+  namespace: agent-chat-ui
+  labels:
+    app: agent-chat-ui
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: agent-chat-ui
+  template:
+    metadata:
+      labels:
+        app: agent-chat-ui
+        version: v1
+    spec:
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      
+      containers:
+      - name: agent-chat-ui
+        # Replace with your actual image from OCI Container Registry (OCIR)
+        # Format: <region-key>.ocir.io/<tenancy-namespace>/<repo-name>:<tag>
+        # Example: us-ashburn-1.ocir.io/mytenancy/agent-chat-ui:latest
+        image: agent-chat-ui:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        
+        # Environment variables from ConfigMap (non-sensitive) and Secret (sensitive)
+        # All variables from both sources will be loaded into the container
+        envFrom:
+        - configMapRef:
+            name: agent-chat-ui-config
+        - secretRef:
+            name: agent-chat-ui-secret
+        
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Liveness probe - checks if container is alive
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Readiness probe - checks if container is ready to serve traffic
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Startup probe - for slow-starting containers
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 12
+        
+        # Security context for the container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+      
+      # Image pull secrets for OCI Container Registry
+      # Uncomment and configure if using OCIR
+      # imagePullSecrets:
+      # - name: ocir-secret
+      
+      # DNS configuration
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30
+

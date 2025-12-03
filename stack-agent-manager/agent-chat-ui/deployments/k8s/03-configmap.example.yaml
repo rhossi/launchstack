@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-chat-ui-config
+  namespace: agent-chat-ui
+data:
+  # NextAuth Configuration
+  # This should match your service's external URL (LoadBalancer or Ingress)
+  NEXTAUTH_URL: "https://agent-chat.example.com"
+  
+  # LangGraph Configuration (Optional)
+  # Uncomment and configure if using LangGraph
+  # NEXT_PUBLIC_API_URL: "https://agent-chat.example.com/api"
+  # NEXT_PUBLIC_ASSISTANT_ID: "agent"
+  # LANGGRAPH_API_URL: "https://your-langgraph-deployment.us.langgraph.app"
+  
+  # Application Configuration
+  NODE_ENV: "production"
+  PORT: "3000"
+

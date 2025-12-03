@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-chat-ui
+  namespace: agent-chat-ui
+  labels:
+    app: agent-chat-ui
+  annotations:
+    # OCI Load Balancer annotations
+    # Uncomment and configure based on your requirements
+    
+    # Use OCI Load Balancer
+    service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+    service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
+    service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "100"
+    
+    # SSL/TLS Configuration (if you have OCI certificates)
+    # service.beta.kubernetes.io/oci-load-balancer-ssl-ports: "443"
+    # service.beta.kubernetes.io/oci-load-balancer-tls-secret: "agent-chat-ui-tls"
+    
+    # Health check configuration
+    # service.beta.kubernetes.io/oci-load-balancer-health-check-interval: "10000"
+    # service.beta.kubernetes.io/oci-load-balancer-health-check-timeout: "3000"
+    # service.beta.kubernetes.io/oci-load-balancer-health-check-retries: "3"
+    
+    # Connection idle timeout (in milliseconds)
+    service.beta.kubernetes.io/oci-load-balancer-connection-idle-timeout: "300000"
+    
+    # Backend policy
+    service.beta.kubernetes.io/oci-load-balancer-backend-protocol: "HTTP"
+spec:
+  type: LoadBalancer
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  # Uncomment for HTTPS (requires certificate configuration)
+  # - name: https
+  #   port: 443
+  #   targetPort: 3000
+  #   protocol: TCP
+  selector:
+    app: agent-chat-ui
+
